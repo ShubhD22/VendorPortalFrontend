@@ -2,21 +2,12 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function ProjectHeadProfile() {
+  const [edit, setEdit] = useState(false);
+
   const [profile, setProfile] = useState({
-    organizationName: "",
     name: "",
     email: "",
     phoneNumber: "",
-    state: "",
-    city: "",
-    address: "",
-    pincode: 0,
-    vendorCategory: {
-      id: "",
-      name: "",
-      description: "",
-      documentList: "",
-    },
   });
   const fetchData = async () => {
     try {
@@ -26,7 +17,6 @@ export default function ProjectHeadProfile() {
       );
 
       setProfile(vendorRes.data);
-      console.log(vendorRes.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -43,39 +33,30 @@ export default function ProjectHeadProfile() {
     }));
   };
 
-  const handleFileChange = (e) => {
-    // const file = e.target.files[0];
-    // setRFPData((prevData) => ({
-    //   ...prevData,
-    //   documentFile: file,
-    // }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const formData = new FormData();
-      formData.append("OrganizationName", profile.organizationName);
-      formData.append("Name", profile.name);
-      formData.append("PhoneNumber", profile.phoneNumber);
-      formData.append("State", profile.state);
-      formData.append("City", profile.city);
-      formData.append("Address", profile.address);
-      formData.append("Pincode", profile.pincode);
       const sid = sessionStorage.getItem("sid");
       const response = await axios.put(
-        `${process.env.REACT_APP_API_URL}/Vendor/${sid}`,
-        formData
+        `${process.env.REACT_APP_API_URL}/ProjectHead/${sid}`,
+        {
+          name: profile.name,
+          phoneNumber: profile.phoneNumber,
+        }
       );
       fetchData();
-      if (response.status === 200) alert("Updated");
+
+      if (response.status === 200) {
+        alert("Profile Updated");
+        setEdit(false);
+      }
     } catch (error) {
       console.error("Error updating vendor:", error.message);
     }
   };
   return (
     <div className="flex flex-col px-8 items-center justify-center">
-      <div class="w-full p-8 bg-white shadow mt-24 ">
+      <div class={`w-full p-8 bg-white shadow mt-24 ${edit ? "hidden" : ""}`}>
         <div class="grid grid-cols-1 mb-10">
           <div class="relative">
             <div class="w-48 h-48 mx-auto absolute inset-x-0 top-0 -mt-24 flex items-center justify-center text-indigo-500">
@@ -100,22 +81,24 @@ export default function ProjectHeadProfile() {
               {profile.phoneNumber}
             </span>
           </h1>
-          <p class="font-light text-gray-600 mt-3">{`${profile.address}, ${profile.city}, ${profile.state}`}</p>
-          <p class="mt-8 text-gray-500 uppercase">{profile.organizationName}</p>
-          <p class="mt-2 text-gray-500 uppercase">
-            {profile.vendorCategory.name}
-          </p>
         </div>
         <div class="flex flex-col justify-center">
           <div class="space-x-8 flex justify-between mt-10 md:justify-center">
-            <button class="text-white py-2 px-4 uppercase rounded bg-gray-700 hover:bg-gray-800 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5">
+            <button
+              class="text-white py-2 px-4 uppercase rounded bg-gray-700 hover:bg-gray-800 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
+              onClick={() => setEdit(true)}
+            >
               Edit Profile
             </button>
           </div>
         </div>
       </div>
 
-      <div class="w-full px-6 pb-8 mt-8 bg-white shadow-dashboard rounded-bl-lg rounded-br-lg">
+      <div
+        class={`w-full px-6 pb-8 mt-8 bg-white shadow-dashboard rounded-bl-lg rounded-br-lg ${
+          edit ? "" : "hidden"
+        }`}
+      >
         <div class="grid mx-auto mt-8">
           <div class="flex flex-col items-center space-y-5">
             <img
@@ -155,24 +138,6 @@ export default function ProjectHeadProfile() {
 
               <div class="mb-6">
                 <label
-                  for="organizationName"
-                  class="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Organization Name
-                </label>
-                <input
-                  type="text"
-                  id="organizationName"
-                  name="organizationName"
-                  value={profile.organizationName}
-                  onChange={handleChange}
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  required
-                />
-              </div>
-
-              <div class="mb-6">
-                <label
                   for="phoneNumber"
                   class="block mb-2 text-sm font-medium text-gray-900"
                 >
@@ -189,103 +154,11 @@ export default function ProjectHeadProfile() {
                 />
               </div>
 
-              <div class="mb-6">
-                <label
-                  for="address"
-                  class="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Address
-                </label>
-                <input
-                  type="text"
-                  id="address"
-                  name="address"
-                  value={profile.address}
-                  onChange={handleChange}
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  required
-                />
-              </div>
-              <div class="mb-6">
-                <label
-                  for="city"
-                  class="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  City
-                </label>
-                <input
-                  type="text"
-                  id="city"
-                  name="city"
-                  value={profile.city}
-                  onChange={handleChange}
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  required
-                />
-              </div>
-              <div class="mb-6">
-                <label
-                  for="state"
-                  class="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  State
-                </label>
-                <input
-                  type="text"
-                  id="state"
-                  name="state"
-                  value={profile.state}
-                  onChange={handleChange}
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  required
-                />
-              </div>
-              <div class="mb-6">
-                <label
-                  for="pincode"
-                  class="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  Pincode
-                </label>
-                <input
-                  type="text"
-                  id="pincode"
-                  name="pincode"
-                  value={profile.pincode}
-                  onChange={handleChange}
-                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-                  required
-                />
-              </div>
-
-              {profile.vendorCategory.documentList.split(",").map((doc) => (
-                <div class="mb-6">
-                  <label
-                    class="block mb-2 text-sm font-medium text-gray-900"
-                    for="documents"
-                  >
-                    Upload file
-                  </label>
-                  <input
-                    class="block w-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none"
-                    aria-describedby="file_input_help"
-                    id="documents"
-                    type="file"
-                    name="documents"
-                    accept=".png, .jpg, .pdf"
-                    onChange={handleFileChange}
-                  />
-                  <p class="mt-1 text-sm text-gray-500" id="file_input_help">
-                    PNG, JPG or PDF.
-                  </p>
-                </div>
-              ))}
-
               <button
                 type="submit"
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               >
-                Update Vendor
+                Update Profile
               </button>
             </form>
           </div>

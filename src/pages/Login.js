@@ -31,7 +31,6 @@ const Login = () => {
           decodeToken[
             "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/sid"
           ];
-        // console.log(roles);
         sessionStorage.setItem("sid", sid);
         sessionStorage.setItem("authToken", authToken);
         sessionStorage.setItem("roles", roles);
@@ -42,11 +41,9 @@ const Login = () => {
             break;
           case "Admin":
             navigate("/admin");
-            console.log("admin");
             break;
           case "ProjectHead":
             navigate("/projecthead");
-            console.log("projecthead");
             break;
           default:
             break;

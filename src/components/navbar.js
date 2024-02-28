@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 
 export default function Navbar({ handleMenuVisible }) {
@@ -24,10 +24,6 @@ export default function Navbar({ handleMenuVisible }) {
     setSearchVisible(false);
     setNotiVisible(false);
   };
-
-  useEffect(() => {
-    console.log("navbar calling");
-  }, []);
 
   const handleLogout = () => {
     sessionStorage.clear();
@@ -368,12 +364,12 @@ export default function Navbar({ handleMenuVisible }) {
           {isProfile && (
             <ul class="dropdown-menu absolute right-5 shadow-md shadow-black/5 z-30 py-1.5 rounded-md bg-white border border-gray-100 w-full max-w-[140px]">
               <li>
-                <a
-                  href="profile"
+                <Link
+                  to="profile"
                   class="flex items-center text-[13px] py-1.5 px-4 text-gray-600 hover:text-[#f84525] hover:bg-gray-50"
                 >
                   Profile
-                </a>
+                </Link>
               </li>
               {/* <li>
                 <a

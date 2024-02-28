@@ -48,7 +48,7 @@ export default function AdminDash() {
           </div>
 
           <a
-            href="projects"
+            href="/admin/projects"
             class="text-[#f84525] font-medium text-sm hover:text-red-800"
           >
             View
@@ -67,7 +67,7 @@ export default function AdminDash() {
             </div>
           </div>
           <a
-            href="allusers"
+            href="/admin/allusers"
             class="text-[#f84525] font-medium text-sm hover:text-red-800"
           >
             View
@@ -86,7 +86,7 @@ export default function AdminDash() {
             </div>
           </div>
           <a
-            href="allusers"
+            href="/admin/allusers"
             class="text-[#f84525] font-medium text-sm hover:text-red-800"
           >
             View

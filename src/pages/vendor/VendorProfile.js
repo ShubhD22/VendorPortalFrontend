@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function VendorProfile() {
+  const [edit, setEdit] = useState(false);
+  const [docCount, setdocCount] = useState(0);
+  const [docFile, setDocFile] = useState([]);
   const [profile, setProfile] = useState({
     organizationName: "",
     name: "",
@@ -26,7 +29,7 @@ export default function VendorProfile() {
       );
 
       setProfile(vendorRes.data);
-      console.log(vendorRes.data);
+      setdocCount(vendorRes.data.vendorCategory.documentList.split(",").length);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -43,39 +46,67 @@ export default function VendorProfile() {
     }));
   };
 
-  const handleFileChange = (e) => {
-    // const file = e.target.files[0];
-    // setRFPData((prevData) => ({
-    //   ...prevData,
-    //   documentFile: file,
-    // }));
+  const handleFileChange = (e, index) => {
+    const file = e.target.files[0];
+
+    setDocFile((prevDocFiles) => {
+      const newDocFiles = [...prevDocFiles];
+
+      newDocFiles[index] = file;
+
+      return newDocFiles;
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append("OrganizationName", profile.organizationName);
-      formData.append("Name", profile.name);
-      formData.append("PhoneNumber", profile.phoneNumber);
-      formData.append("State", profile.state);
-      formData.append("City", profile.city);
-      formData.append("Address", profile.address);
-      formData.append("Pincode", profile.pincode);
-      const sid = sessionStorage.getItem("sid");
-      const response = await axios.put(
-        `${process.env.REACT_APP_API_URL}/Vendor/${sid}`,
-        formData
-      );
-      fetchData();
-      if (response.status === 200) alert("Updated");
-    } catch (error) {
-      console.error("Error updating vendor:", error.message);
+
+    var c = 0;
+    docFile.forEach((file) => {
+      if (file.name) {
+        c++;
+      }
+    });
+
+    if (c === docCount || c === 0) {
+      try {
+        const formData = new FormData();
+        formData.append("OrganizationName", profile.organizationName);
+        formData.append("Name", profile.name);
+        formData.append("PhoneNumber", profile.phoneNumber);
+        formData.append("State", profile.state);
+        formData.append("City", profile.city);
+        formData.append("Address", profile.address);
+        formData.append("Pincode", profile.pincode);
+
+        docFile.forEach((doc) => {
+          formData.append("Documents", doc);
+        });
+
+        const sid = sessionStorage.getItem("sid");
+
+        const response = await axios.put(
+          `${process.env.REACT_APP_API_URL}/Vendor/${sid}`,
+          formData
+        );
+
+        fetchData();
+
+        if (response.status === 200) {
+          alert("Profile Updated");
+          setEdit(false);
+        }
+      } catch (error) {
+        console.error("Error updating vendor:", error.response.data);
+        alert(error.response.data);
+      }
+    } else {
+      alert("Select All Documents");
     }
   };
   return (
     <div className="flex flex-col px-8 items-center justify-center">
-      <div class="w-full p-8 bg-white shadow mt-24 ">
+      <div class={`w-full p-8 bg-white shadow mt-24 ${edit ? "hidden" : ""}`}>
         <div class="grid grid-cols-1 mb-10">
           <div class="relative">
             <div class="w-48 h-48 mx-auto absolute inset-x-0 top-0 -mt-24 flex items-center justify-center text-indigo-500">
@@ -108,14 +139,21 @@ export default function VendorProfile() {
         </div>
         <div class="flex flex-col justify-center">
           <div class="space-x-8 flex justify-between mt-10 md:justify-center">
-            <button class="text-white py-2 px-4 uppercase rounded bg-gray-700 hover:bg-gray-800 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5">
+            <button
+              class="text-white py-2 px-4 uppercase rounded bg-gray-700 hover:bg-gray-800 shadow hover:shadow-lg font-medium transition transform hover:-translate-y-0.5"
+              onClick={() => setEdit(true)}
+            >
               Edit Profile
             </button>
           </div>
         </div>
       </div>
 
-      <div class="w-full px-6 pb-8 mt-8 bg-white shadow-dashboard rounded-bl-lg rounded-br-lg">
+      <div
+        class={`w-full px-6 pb-8 mt-8 bg-white shadow-dashboard rounded-bl-lg rounded-br-lg ${
+          edit ? "" : "hidden"
+        }`}
+      >
         <div class="grid mx-auto mt-8">
           <div class="flex flex-col items-center space-y-5">
             <img
@@ -258,34 +296,36 @@ export default function VendorProfile() {
                 />
               </div>
 
-              {profile.vendorCategory.documentList.split(",").map((doc) => (
-                <div class="mb-6">
-                  <label
-                    class="block mb-2 text-sm font-medium text-gray-900"
-                    for="documents"
-                  >
-                    Upload file
-                  </label>
-                  <input
-                    class="block w-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none"
-                    aria-describedby="file_input_help"
-                    id="documents"
-                    type="file"
-                    name="documents"
-                    accept=".png, .jpg, .pdf"
-                    onChange={handleFileChange}
-                  />
-                  <p class="mt-1 text-sm text-gray-500" id="file_input_help">
-                    PNG, JPG or PDF.
-                  </p>
-                </div>
-              ))}
+              {profile.vendorCategory.documentList
+                .split(",")
+                .map((doc, index) => (
+                  <div class="mb-6" key={index}>
+                    <label
+                      class="block mb-2 text-sm font-medium text-gray-900"
+                      htmlFor={`documents_${index}`}
+                    >
+                      Upload {doc}
+                    </label>
+                    <input
+                      class="block w-full p-3 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none"
+                      aria-describedby={`file_input_help_${index}`}
+                      id={`documents_${index}`}
+                      type="file"
+                      name={`documents_${index}`}
+                      accept=".png, .jpg, .pdf .txt"
+                      onChange={(e) => handleFileChange(e, index)}
+                    />
+                    <p class="mt-1 text-sm text-gray-500" id="file_input_help">
+                      PNG, JPG or PDF.
+                    </p>
+                  </div>
+                ))}
 
               <button
                 type="submit"
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               >
-                Update Vendor
+                Update Profile
               </button>
             </form>
           </div>

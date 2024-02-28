@@ -49,7 +49,7 @@ export default function VendorDash() {
           </div>
 
           <a
-            href="rfp"
+            href="/vendor/rfp"
             class="text-[#f84525] font-medium text-sm hover:text-red-800"
           >
             View

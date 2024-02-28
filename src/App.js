@@ -5,6 +5,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import axios from "axios";
 
 import Login from "./pages/Login";
 import VendorDashboard from "./pages/VendorDashboard";

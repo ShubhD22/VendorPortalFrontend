@@ -37,7 +37,7 @@ export default function ProjectHeadDash() {
           </div>
 
           <a
-            href="assigned-project"
+            href="/projecthead/assigned-project"
             class="text-[#f84525] font-medium text-sm hover:text-red-800"
           >
             View

@@ -4,14 +4,19 @@ import axios from "axios";
 export default function RFP() {
   const [rfps, setRFPs] = useState([]);
   useEffect(() => {
-    // Fetch vendor data when the component mounts
     const fetchRFPData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_API_URL}/RFP/All`
+        const sid = sessionStorage.getItem("sid");
+        const vendorCatRes = await axios.get(
+          `${process.env.REACT_APP_API_URL}/Vendor/${sid}`
         );
 
-        setRFPs(response.data);
+        const catId = vendorCatRes.data.vendorCategory.id;
+        const rfpCatRes = await axios.get(
+          `${process.env.REACT_APP_API_URL}/RFP/VendorCategory/${catId}`
+        );
+
+        setRFPs(rfpCatRes.data);
       } catch (error) {
         console.error("Error fetching RFP data:", error);
       }
