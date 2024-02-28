@@ -28,6 +28,11 @@ import VendorDash from "./pages/vendor/VendorDash";
 import RFP from "./pages/vendor/RFP";
 import VendorProfile from "./pages/vendor/VendorProfile";
 
+//ProjectHead
+import ProjectHeadDash from "./pages/projecthead/ProjectHeadDash";
+import ProjectHeadProfile from "./pages/projecthead/ProjectHeadProfile";
+import AssignedProject from "./pages/projecthead/AssignedProject";
+
 const App = () => {
   const [userRole, setuserRole] = useState(sessionStorage.getItem("roles"));
   useEffect(() => {
@@ -55,12 +60,17 @@ const App = () => {
 
         <Route path="/vendor" element={<VendorDashboard />}>
           <Route index element={<VendorDash />} />
-          <Route path="profile" element={<VendorProfile />} />
           <Route path="dashboard" index element={<VendorDash />} />
+          <Route path="profile" element={<VendorProfile />} />
           <Route path="rfp" index element={<RFP />} />
         </Route>
 
-        <Route path="/projecthead" element={<ProjectHeadDashboard />} />
+        <Route path="/projecthead" element={<ProjectHeadDashboard />}>
+          <Route index element={<ProjectHeadDash />} />
+          <Route path="dashboard" index element={<ProjectHeadDash />} />
+          <Route path="profile" element={<ProjectHeadProfile />} />
+          <Route path="assigned-project" element={<AssignedProject />} />
+        </Route>
 
         <Route path="/" element={<Navigate to="/login" />} />
       </Routes>
